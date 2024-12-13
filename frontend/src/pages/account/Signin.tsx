@@ -21,19 +21,16 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const CreateAccount = () => {
   const navigate = useNavigate();
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
   const theme = useTheme();
 
-  const handleSignIn = () => {
-    navigate("/login/sign-in");
+  const handleSignUp = () => {
+    navigate("/login/create-account");
   };
 
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const passwordValue = event.target.value;
@@ -46,25 +43,8 @@ const CreateAccount = () => {
     }
   };
 
-  const handleConfirmPasswordChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const confirmPasswordValue = event.target.value;
-    setConfirmPassword(confirmPasswordValue);
-
-    if (confirmPasswordValue !== password) {
-      setConfirmPasswordError(true);
-    } else {
-      setConfirmPasswordError(false);
-    }
-  };
-
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const handleClickShowConfirmPassword = () => {
-    setShowConfirmPassword((prev) => !prev);
   };
 
   const handleMouseDownPassword = (
@@ -73,14 +53,12 @@ const CreateAccount = () => {
     event.preventDefault();
   };
 
-  const handleMouseDownConfirmPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
   const handleClose = () => {
     navigate("/");
+  };
+
+  const handleConfirm = () => {
+    navigate("/dashboard");
   };
 
   return (
@@ -111,7 +89,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Create your Account
+              Login your Account
             </Typography>
             <Typography
               variant="subtitle1"
@@ -123,7 +101,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Enter your details to sign up
+              Enter your details to login.
             </Typography>
           </Stack>
 
@@ -143,6 +121,7 @@ const CreateAccount = () => {
 
         {/* Input Fields*/}
         <Stack spacing={2} className="w-[21rem]">
+          {/* Username Field */}
           <TextField
             id="enter-your-username"
             label="Enter your username"
@@ -280,186 +259,18 @@ const CreateAccount = () => {
             )}
           </FormControl>
 
-          {/* Confirm Password Field */}
-          <FormControl
-            variant="outlined"
-            error={confirmPasswordError}
-            sx={{
-              m: 1,
-              width: "100%",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-            }}
-          >
-            <InputLabel
-              htmlFor="confirm-password"
-              sx={{
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              }}
-            >
-              Confirm your password
-            </InputLabel>
-            <OutlinedInput
-              id="confirm-password"
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              inputProps={{
-                minLength: 8,
-              }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label={
-                      showConfirmPassword
-                        ? "hide the password"
-                        : "display the password"
-                    }
-                    onClick={handleClickShowConfirmPassword}
-                    onMouseDown={handleMouseDownConfirmPassword}
-                    onMouseUp={handleMouseDownConfirmPassword}
-                    edge="end"
-                    sx={{
-                      color: "#808080",
-                      zIndex: 1,
-                      marginRight: "0.1rem",
-                      "&:hover": {
-                        color: "#FFFEFE",
-                      },
-                    }}
-                  >
-                    {showConfirmPassword ? (
-                      <VisibilityOff fontSize="small" />
-                    ) : (
-                      <Visibility fontSize="small" />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Confirm your password"
-            />
-            {confirmPasswordError && (
-              <p
-                style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}
-              >
-                Passwords do not match
-              </p>
-            )}
-          </FormControl>
-          <TextField
-            id="enter-your-email"
-            label="Enter your email"
-            variant="outlined"
-            size="medium"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              },
-              [theme.breakpoints.down("sm")]: {
-                width: "100%", // Full width on small screens
-              },
-            }}
-          />
-
           {/* Terms and Conditions */}
-          <Stack direction={"row"} className="flex items-center ">
-            <Checkbox
-              {...label}
-              size="small"
-              sx={{
-                "& .MuiSvgIcon-root": {
-                  fill: "none",
-                },
-              }}
-              icon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    border: "0.06rem solid #FFFEFE",
-                  }}
-                />
-              }
-              checkedIcon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                  }}
-                />
-              }
-            />
+          <Stack direction={"row"} className="flex items-end">
+            <Box flexGrow={1}></Box>
             <Button variant="text" size="small" sx={{ textTransform: "none" }}>
               <Typography
                 variant="subtitle2"
                 sx={{
-                  color: "#FFFEFE",
+                  color: "#808080",
                   fontFamily: "Questrial", // Apply the same font as in ThemeProvider
                 }}
               >
-                I agree to <span style={{ color: "#AA684A" }}>Terms</span> and{" "}
-                <span style={{ color: "#76ABB2" }}>Conditions</span>
+                Forgot Password
               </Typography>
             </Button>
           </Stack>
@@ -484,8 +295,9 @@ const CreateAccount = () => {
                   scale: 1.01,
                 },
               }}
+              onClick={handleConfirm}
             >
-              Create your Account
+              Confirm
             </Button>
             <Divider>or</Divider>
             <Button
@@ -513,7 +325,7 @@ const CreateAccount = () => {
                   marginRight: "0.75rem",
                 }}
               />
-              Sign up with Google
+              Sign in with Google
             </Button>
           </Stack>
 
@@ -532,7 +344,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Already have an account?
+              Dont have an account?
             </Typography>
             <Button
               variant="text"
@@ -541,9 +353,9 @@ const CreateAccount = () => {
                 fontFamily: "Questrial",
                 textTransform: "none",
               }}
-              onClick={handleSignIn}
+              onClick={handleSignUp}
             >
-              Sign in
+              Sign up
             </Button>
           </Stack>
         </Stack>

@@ -2,8 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation } from "react-router-dom"; // Import useLocation
 import LandingPage from "./pages/landing-page/LandingPage";
-import CreateAccount from "./pages/login/CreateAccount";
-import Signin from "./pages/login/Signin";
+import CreateAccount from "./pages/account/CreateAccount";
+import Signin from "./pages/account/Signin";
+import Dashboard from "./pages/dashboard/Dashboard";
 import "./index.css";
 
 function App() {
@@ -40,7 +41,7 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/login/create-account"
+          path="/account/create-account"
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -58,7 +59,7 @@ function AppRoutes() {
           }
         />
         <Route
-          path="/login/sign-in"
+          path="/account/sign-in"
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -72,6 +73,24 @@ function AppRoutes() {
               }}
             >
               <Signin />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 40,
+                mass: 1,
+              }}
+            >
+              <Dashboard />
             </motion.div>
           }
         />

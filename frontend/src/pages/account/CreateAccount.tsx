@@ -24,8 +24,8 @@ const CreateAccount = () => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const theme = useTheme();
 
-  const handleSignUp = () => {
-    navigate("/login/create-account");
+  const handleSignIn = () => {
+    navigate("/login/sign-in");
   };
 
   const [password, setPassword] = useState("");
@@ -83,6 +83,10 @@ const CreateAccount = () => {
     navigate("/");
   };
 
+  const handleCreateAccount = () => {
+    navigate("/account/sign-in");
+  };
+
   return (
     <Box className="flex items-center justify-center h-screen w-full p-10">
       <Stack spacing={4}>
@@ -111,7 +115,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Login your Account
+              Create your Account
             </Typography>
             <Typography
               variant="subtitle1"
@@ -123,7 +127,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Enter your details to login.
+              Enter your details to sign up
             </Typography>
           </Stack>
 
@@ -143,7 +147,6 @@ const CreateAccount = () => {
 
         {/* Input Fields*/}
         <Stack spacing={2} className="w-[21rem]">
-          {/* Username Field */}
           <TextField
             id="enter-your-username"
             label="Enter your username"
@@ -281,18 +284,186 @@ const CreateAccount = () => {
             )}
           </FormControl>
 
+          {/* Confirm Password Field */}
+          <FormControl
+            variant="outlined"
+            error={confirmPasswordError}
+            sx={{
+              m: 1,
+              width: "100%",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "& input": {
+                  color: "#FFFEFE",
+                  zIndex: 1,
+                  paddingX: "1.3rem",
+                  fontFamily: "Questrial",
+                },
+              },
+            }}
+          >
+            <InputLabel
+              htmlFor="confirm-password"
+              sx={{
+                color: "#808080",
+                zIndex: 1,
+                paddingX: "0.5rem",
+                fontFamily: "Questrial",
+                "&.Mui-focused": {
+                  color: "#FFFEFE",
+                  padding: "0rem",
+                },
+              }}
+            >
+              Confirm your password
+            </InputLabel>
+            <OutlinedInput
+              id="confirm-password"
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              inputProps={{
+                minLength: 8,
+              }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={
+                      showConfirmPassword
+                        ? "hide the password"
+                        : "display the password"
+                    }
+                    onClick={handleClickShowConfirmPassword}
+                    onMouseDown={handleMouseDownConfirmPassword}
+                    onMouseUp={handleMouseDownConfirmPassword}
+                    edge="end"
+                    sx={{
+                      color: "#808080",
+                      zIndex: 1,
+                      marginRight: "0.1rem",
+                      "&:hover": {
+                        color: "#FFFEFE",
+                      },
+                    }}
+                  >
+                    {showConfirmPassword ? (
+                      <VisibilityOff fontSize="small" />
+                    ) : (
+                      <Visibility fontSize="small" />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Confirm your password"
+            />
+            {confirmPasswordError && (
+              <p
+                style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}
+              >
+                Passwords do not match
+              </p>
+            )}
+          </FormControl>
+          <TextField
+            id="enter-your-email"
+            label="Enter your email"
+            variant="outlined"
+            size="medium"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "& input": {
+                  color: "#FFFEFE",
+                  zIndex: 1,
+                  paddingX: "1.3rem",
+                  fontFamily: "Questrial",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#808080",
+                zIndex: 1,
+                paddingX: "0.5rem",
+                fontFamily: "Questrial",
+                "&.Mui-focused": {
+                  color: "#FFFEFE",
+                  padding: "0rem",
+                },
+              },
+              [theme.breakpoints.down("sm")]: {
+                width: "100%", // Full width on small screens
+              },
+            }}
+          />
+
           {/* Terms and Conditions */}
-          <Stack direction={"row"} className="flex items-end">
-            <Box flexGrow={1}></Box>
+          <Stack direction={"row"} className="flex items-center ">
+            <Checkbox
+              {...label}
+              size="small"
+              sx={{
+                "& .MuiSvgIcon-root": {
+                  fill: "none",
+                },
+              }}
+              icon={
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "1rem",
+                    height: "1rem",
+                    borderRadius: "0.25rem",
+                    border: "0.06rem solid #FFFEFE",
+                  }}
+                />
+              }
+              checkedIcon={
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: "1rem",
+                    height: "1rem",
+                    borderRadius: "0.25rem",
+                    background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                  }}
+                />
+              }
+            />
             <Button variant="text" size="small" sx={{ textTransform: "none" }}>
               <Typography
                 variant="subtitle2"
                 sx={{
-                  color: "#808080",
+                  color: "#FFFEFE",
                   fontFamily: "Questrial", // Apply the same font as in ThemeProvider
                 }}
               >
-                Forgot Password
+                I agree to <span style={{ color: "#AA684A" }}>Terms</span> and{" "}
+                <span style={{ color: "#76ABB2" }}>Conditions</span>
               </Typography>
             </Button>
           </Stack>
@@ -317,8 +488,9 @@ const CreateAccount = () => {
                   scale: 1.01,
                 },
               }}
+              onClick={handleCreateAccount}
             >
-              Confirm
+              Create your Account
             </Button>
             <Divider>or</Divider>
             <Button
@@ -346,7 +518,7 @@ const CreateAccount = () => {
                   marginRight: "0.75rem",
                 }}
               />
-              Sign in with Google
+              Sign up with Google
             </Button>
           </Stack>
 
@@ -365,7 +537,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Dont have an account?
+              Already have an account?
             </Typography>
             <Button
               variant="text"
@@ -374,9 +546,9 @@ const CreateAccount = () => {
                 fontFamily: "Questrial",
                 textTransform: "none",
               }}
-              onClick={handleSignUp}
+              onClick={handleSignIn}
             >
-              Sign up
+              Sign in
             </Button>
           </Stack>
         </Stack>

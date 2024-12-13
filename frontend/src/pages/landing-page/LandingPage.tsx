@@ -27,11 +27,11 @@ const LandingPage = () => {
   };
 
   const handleGetStarted = () => {
-    navigate("/login/create-account");
+    navigate("/account/create-account");
   };
 
   const handleLogin = () => {
-    navigate("/login/sign-in");
+    navigate("/account/sign-in");
   };
 
   const features = [
