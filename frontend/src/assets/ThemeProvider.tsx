@@ -2,26 +2,28 @@ import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 import { PaletteMode } from "@mui/material";
 
 function ThemeProvider(mode: PaletteMode = "light") {
+  console.log("Current mode:", mode); // Debugging mode
+
   let theme = createTheme({
     palette: {
       mode,
       ...(mode === "light"
         ? {
             background: {
-              default: "#FDFBFB",
+              default: "#F0F0F0",
             },
             text: {
               primary: "#0A0A0A",
-              secondary: "#0A0A0A",
+              secondary: "#4A4A4A",
             },
           }
         : {
             background: {
-              default: "#0A0A0A",
+              default: "#121212",
             },
             text: {
               primary: "#FFFEFE",
-              secondary: "#FFFEFE",
+              secondary: "#B3B3B3",
             },
           }),
     },

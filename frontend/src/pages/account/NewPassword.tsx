@@ -4,27 +4,24 @@ import {
   Box,
   Stack,
   Typography,
-  TextField,
-  Checkbox,
   Button,
-  Divider,
   IconButton,
+  Tooltip,
+  Zoom,
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
-  Tooltip,
-  Zoom,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import GoogleIcon from "@mui/icons-material/Google";
-import CloseIcon from "@mui/icons-material/Close";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import ResetPassword from "./ResetPassword";
 
-const CreateAccount = () => {
+import CloseIcon from "@mui/icons-material/Close";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+const ResetPassword = ({ onClose }: { onClose: () => void }) => {
   const navigate = useNavigate();
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
   const theme = useTheme();
 
   const [password, setPassword] = useState("");
@@ -78,134 +75,83 @@ const CreateAccount = () => {
     event.preventDefault();
   };
 
-  const handleSignIn = () => {
-    navigate("/account/sign-in");
-  };
-
-  const handleClose = () => {
-    navigate("/landing-page");
-  };
-
-  const handleCreateAccount = () => {
-    navigate("/account/sign-in");
+  const handleConfirm = () => {
+    navigate("/dashboard");
   };
 
   return (
-    <Box className="flex items-center justify-center h-screen w-full p-10">
+    <Box className="flex items-center justify-center w-full pl-16 pr-16 pb-16 pt-12 bg-[#121212]">
       <Stack spacing={4}>
         {/* Title */}
-        <Stack
-          direction={"row"}
-          className="flex justify-center items-center"
-          spacing={4}
-        >
-          <Stack className="flex justify-center items-center">
+        <Box>
+          <Stack spacing={2}>
             {" "}
-            <Typography
-              variant="h4"
-              sx={{
-                color: "#FFFEFE",
-                fontFamily: "Questrial",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "2rem",
-                },
-              }}
-            >
-              Create your Account
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{
-                color: "#FFFEFE",
-                fontFamily: "Questrial",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "1rem",
-                },
-              }}
-            >
-              Enter your details to sign up
-            </Typography>
-          </Stack>
-
-          <Tooltip
-            title="Close"
-            slots={{ transition: Zoom }}
-            placement="top"
-            arrow
-            slotProps={{
-              popper: {
-                modifiers: [
-                  {
-                    name: "offset",
-                    options: {
-                      offset: [0, -5],
-                    },
+            <Stack direction={"row"}>
+              <Box flexGrow={1}></Box>
+              <Tooltip
+                title="Close"
+                slots={{ transition: Zoom }}
+                placement="top"
+                arrow
+                slotProps={{
+                  popper: {
+                    modifiers: [
+                      {
+                        name: "offset",
+                        options: {
+                          offset: [0, -5],
+                        },
+                      },
+                    ],
                   },
-                ],
-              },
-            }}
-          >
-            <IconButton
-              aria-label="close"
-              onClick={handleClose}
-              sx={{
-                color: "white",
-                "&:hover": {
-                  background: "linear-gradient(90deg, #AA684A, #76ABB2)",
-                },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </Stack>
+                }}
+              >
+                <IconButton
+                  aria-label="close"
+                  onClick={onClose}
+                  sx={{
+                    color: "white",
+                    "&:hover": {
+                      background: "linear-gradient(90deg, #AA684A, #76ABB2)",
+                    },
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+            <Stack justifyContent={"center"} alignItems={"center"}>
+              <Typography
+                variant="h4"
+                sx={{
+                  color: "#FFFEFE",
+                  fontFamily: "Questrial",
+                  [theme.breakpoints.down("sm")]: {
+                    fontSize: "2rem",
+                  },
+                }}
+              >
+                Reset your Password{" "}
+              </Typography>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  color: "#FFFEFE",
+                  fontFamily: "Questrial",
+                  [theme.breakpoints.down("sm")]: {
+                    fontSize: "1rem",
+                  },
+                }}
+              >
+                Enter your email to reset password.
+              </Typography>
+            </Stack>
+          </Stack>
+        </Box>
 
         {/* Input Fields*/}
-        <Stack spacing={2} className="w-[21rem]">
-          <TextField
-            id="enter-your-username"
-            label="Enter your username"
-            variant="outlined"
-            size="medium"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              },
-              [theme.breakpoints.down("sm")]: {
-                width: "100%", // Full width on small screens
-              },
-            }}
-          />
-          {/* Password Field */}
+        <Stack spacing={3} className="w-[21rem]">
+          {/* Username Field */}
           <FormControl
             variant="outlined"
             error={passwordError}
@@ -237,7 +183,7 @@ const CreateAccount = () => {
             }}
           >
             <InputLabel
-              htmlFor="password"
+              htmlFor="new-password"
               sx={{
                 color: "#808080",
                 zIndex: 1,
@@ -249,10 +195,10 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Enter your password
+              Enter your new password
             </InputLabel>
             <OutlinedInput
-              id="password"
+              id="new-password"
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={handlePasswordChange}
@@ -288,7 +234,7 @@ const CreateAccount = () => {
                   </IconButton>
                 </InputAdornment>
               }
-              label="Enter your password"
+              label="Enter your new password"
             />
             {passwordError && (
               <p
@@ -299,7 +245,6 @@ const CreateAccount = () => {
             )}
           </FormControl>
 
-          {/* Confirm Password Field */}
           <FormControl
             variant="outlined"
             error={confirmPasswordError}
@@ -392,99 +337,9 @@ const CreateAccount = () => {
               </p>
             )}
           </FormControl>
-          <TextField
-            id="enter-your-email"
-            label="Enter your email"
-            variant="outlined"
-            size="medium"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              },
-              [theme.breakpoints.down("sm")]: {
-                width: "100%", // Full width on small screens
-              },
-            }}
-          />
-
-          {/* Terms and Conditions */}
-          <Stack direction={"row"} className="flex items-center ">
-            <Checkbox
-              {...label}
-              size="small"
-              sx={{
-                "& .MuiSvgIcon-root": {
-                  fill: "none",
-                },
-              }}
-              icon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    border: "0.06rem solid #FFFEFE",
-                  }}
-                />
-              }
-              checkedIcon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                  }}
-                />
-              }
-            />
-            <Button variant="text" size="small" sx={{ textTransform: "none" }}>
-              <Typography
-                variant="subtitle2"
-                sx={{
-                  color: "#FFFEFE",
-                  fontFamily: "Questrial", // Apply the same font as in ThemeProvider
-                }}
-              >
-                I agree to <span style={{ color: "#AA684A" }}>Terms</span> and{" "}
-                <span style={{ color: "#76ABB2" }}>Conditions</span>
-              </Typography>
-            </Button>
-          </Stack>
 
           {/* Create Account Button */}
-          <Stack spacing={1}>
+          <Stack>
             {" "}
             <Button
               fullWidth
@@ -503,67 +358,9 @@ const CreateAccount = () => {
                   scale: 1.01,
                 },
               }}
-              onClick={handleCreateAccount}
+              onClick={handleConfirm}
             >
-              Create your Account
-            </Button>
-            <Divider>or</Divider>
-            <Button
-              fullWidth
-              variant="outlined"
-              sx={{
-                borderColor: "#FFFEFE",
-                color: "white",
-                textTransform: "none",
-                fontFamily: "Questrial",
-                borderRadius: "0.5rem",
-                height: "3rem",
-                [theme.breakpoints.down("sm")]: {
-                  height: "2.5rem", // Adjust height on smaller screens
-                },
-                "&:hover": {
-                  background: "linear-gradient(90deg, #AA684A, #76ABB2)",
-                },
-              }}
-            >
-              <GoogleIcon
-                sx={{
-                  color: "#FFFEFE",
-                  fontSize: "1.2rem",
-                  marginRight: "0.75rem",
-                }}
-              />
-              Sign up with Google
-            </Button>
-          </Stack>
-
-          <Stack
-            direction={"row"}
-            spacing={1}
-            className="flex items-center justify-center"
-          >
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: "#808080",
-                fontFamily: "Questrial",
-                [theme.breakpoints.down("sm")]: {
-                  fontSize: "2rem",
-                },
-              }}
-            >
-              Already have an account?
-            </Typography>
-            <Button
-              variant="text"
-              sx={{
-                color: "#FFFEFE",
-                fontFamily: "Questrial",
-                textTransform: "none",
-              }}
-              onClick={handleSignIn}
-            >
-              Sign in
+              Confrim
             </Button>
           </Stack>
         </Stack>
@@ -572,4 +369,4 @@ const CreateAccount = () => {
   );
 };
 
-export default CreateAccount;
+export default ResetPassword;

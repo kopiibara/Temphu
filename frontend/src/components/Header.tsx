@@ -1,5 +1,81 @@
+import { useState } from "react";
+import {
+  Box,
+  Stack,
+  Typography,
+  Button,
+  IconButton,
+  Tooltip,
+  Zoom,
+} from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import ThemeProvide from "../assets/ThemeProvider";
+import SettingsIcon from "@mui/icons-material/Settings";
+
 const Header = () => {
-  return <div>Header</div>;
+  const navigate = useNavigate();
+
+  const [mode, setMode] = useState("dark");
+  const theme = ThemeProvide(mode as "light" | "dark");
+  const toggleMode = () => {
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
+
+  const handleLogoClick = () => {
+    navigate("/landing-page");
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box className="px-16 py-8 w-full">
+        <Stack direction="row" spacing={2} className="flex items-center ">
+          <Stack direction={"row"} alignItems="center">
+            <Button
+              variant="text"
+              onClick={handleLogoClick}
+              sx={{
+                p: 0,
+                textTransform: "none",
+              }}
+            >
+              {" "}
+              <img src="/temphu-logo.png" alt="temphu" width={40} />
+            </Button>
+            <Typography variant="h6">Temphu</Typography>
+          </Stack>
+
+          <Box flexGrow={1} />
+          <Tooltip
+            title="Settings"
+            slots={{ transition: Zoom }}
+            placement="bottom"
+            arrow
+            slotProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, -5],
+                    },
+                  },
+                ],
+              },
+            }}
+          >
+            <IconButton
+              aria-label="Edit"
+              className="rounded-full min-w-auto min-h-auto"
+            >
+              <SettingsIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Box>
+    </ThemeProvider>
+  );
 };
 
 export default Header;

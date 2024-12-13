@@ -17,13 +17,16 @@ import DataOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOut
 import CloudDoneOutlinedIcon from "@mui/icons-material/CloudDoneOutlined";
 
 const LandingPage = () => {
-  const [mode, setMode] = useState("dark");
   const navigate = useNavigate();
 
+  const [mode, setMode] = useState("dark");
   const theme = ThemeProvide(mode as "light" | "dark");
-
   const toggleMode = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+  };
+
+  const handleLogoClick = () => {
+    navigate("/landing-page");
   };
 
   const handleGetStarted = () => {
@@ -95,18 +98,28 @@ const LandingPage = () => {
             spacing={1.5}
             className="flex items-center sticky top-0 z-10 pt-10 pb-5"
             sx={{
-              backgroundColor: mode === "light" ? "#FDFBFB" : "#0A0A0A",
+              backgroundColor:
+                mode === "light" ? "#F0F0F0" : "background.paper",
               transition: "background-color 0.3s ease, box-shadow 0.3s ease",
               paddingX: { xs: 2, md: 6 },
             }}
             alignItems="center"
           >
-            <img
-              src="/temphu-logo.png"
-              alt="temphu"
-              style={{ maxWidth: "150px" }}
-            />
-            <Typography variant="h5">Temphu</Typography>
+            <Stack direction={"row"} alignItems="center">
+              <Button
+                variant="text"
+                onClick={handleLogoClick}
+                sx={{
+                  p: 0,
+                  textTransform: "none",
+                }}
+              >
+                {" "}
+                <img src="/temphu-logo.png" alt="temphu" width={40} />
+              </Button>
+              <Typography variant="h6">Temphu</Typography>
+            </Stack>
+
             <Box flexGrow={1} />
             <Button
               variant="text"
@@ -226,7 +239,7 @@ const LandingPage = () => {
                     : { opacity: 0, scale: 0.9 }
                 }
                 transition={{
-                  duration: 0.6,
+                  duration: 0.5,
                   ease: "easeOut",
                 }}
               >
@@ -246,7 +259,7 @@ const LandingPage = () => {
                     animate={
                       featureSectionInView
                         ? { opacity: 1, scale: 1 }
-                        : { opacity: 0, scale: 0.9 }
+                        : { opacity: 0, scale: 0.7 }
                     }
                     transition={{
                       duration: 0.6,
@@ -277,7 +290,7 @@ const LandingPage = () => {
                 animate={
                   toolSectionInView
                     ? { opacity: 1, scale: 1 }
-                    : { opacity: 0, scale: 0.9 }
+                    : { opacity: 0, scale: 0.7 }
                 }
                 transition={{
                   duration: 0.6,

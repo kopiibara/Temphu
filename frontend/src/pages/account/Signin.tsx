@@ -5,7 +5,6 @@ import {
   Stack,
   Typography,
   TextField,
-  Checkbox,
   Button,
   Divider,
   IconButton,
@@ -13,24 +12,26 @@ import {
   InputLabel,
   OutlinedInput,
   InputAdornment,
+  Tooltip,
+  Zoom,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import ResetPassword from "./ResetPassword";
 
-const CreateAccount = () => {
+const Signin = () => {
   const navigate = useNavigate();
 
   const theme = useTheme();
 
-  const handleSignUp = () => {
-    navigate("/login/create-account");
-  };
-
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [openResetDialog, setOpenResetDialog] = useState(false);
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const passwordValue = event.target.value;
@@ -53,24 +54,29 @@ const CreateAccount = () => {
     event.preventDefault();
   };
 
+  const handleSignUp = () => {
+    navigate("/account/create-account");
+  };
+
   const handleClose = () => {
-    navigate("/");
+    navigate("/landing-page");
   };
 
   const handleConfirm = () => {
     navigate("/dashboard");
   };
 
+  const handleOpenResetPassword = () => {
+    setOpenResetDialog(true);
+  };
+
+  const handleCloseResetPassword = () => {
+    setOpenResetDialog(false);
+  };
+
   return (
     <Box className="flex items-center justify-center h-screen w-full p-10">
       <Stack spacing={4}>
-        {/* Close Button */}
-        <Stack
-          direction={"row"}
-          justifyContent={"flex-end"}
-          className="-ml-7"
-        ></Stack>
-
         {/* Title */}
         <Stack
           direction={"row"}
@@ -105,18 +111,37 @@ const CreateAccount = () => {
             </Typography>
           </Stack>
 
-          <IconButton
-            aria-label="close"
-            onClick={handleClose}
-            sx={{
-              color: "white",
-              "&:hover": {
-                background: "linear-gradient(90deg, #AA684A, #76ABB2)",
+          <Tooltip
+            title="Close"
+            slots={{ transition: Zoom }}
+            placement="top"
+            arrow
+            slotProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, -5],
+                    },
+                  },
+                ],
               },
             }}
           >
-            <CloseIcon />
-          </IconButton>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              sx={{
+                color: "white",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #AA684A, #76ABB2)",
+                },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
         </Stack>
 
         {/* Input Fields*/}
@@ -126,7 +151,6 @@ const CreateAccount = () => {
             id="enter-your-username"
             label="Enter your username"
             variant="outlined"
-            size="medium"
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -153,6 +177,7 @@ const CreateAccount = () => {
               "& .MuiInputLabel-root": {
                 color: "#808080",
                 zIndex: 1,
+
                 paddingX: "0.5rem",
                 fontFamily: "Questrial",
                 "&.Mui-focused": {
@@ -259,15 +284,20 @@ const CreateAccount = () => {
             )}
           </FormControl>
 
-          {/* Terms and Conditions */}
+          {/* Forgot Password */}
           <Stack direction={"row"} className="flex items-end">
             <Box flexGrow={1}></Box>
-            <Button variant="text" size="small" sx={{ textTransform: "none" }}>
+            <Button
+              variant="text"
+              size="small"
+              sx={{ textTransform: "none" }}
+              onClick={handleOpenResetPassword}
+            >
               <Typography
                 variant="subtitle2"
                 sx={{
                   color: "#808080",
-                  fontFamily: "Questrial", // Apply the same font as in ThemeProvider
+                  fontFamily: "Questrial",
                 }}
               >
                 Forgot Password
@@ -360,8 +390,30 @@ const CreateAccount = () => {
           </Stack>
         </Stack>
       </Stack>
+
+      {/* Reset Password Dialog */}
+      <Dialog
+        open={openResetDialog}
+        onClose={handleCloseResetPassword}
+        aria-labelledby="reset-password-dialog"
+        sx={{
+          "& .MuiPaper-root": {
+            backgroundColor: "#1e293b",
+
+            borderRadius: "0.5rem",
+          },
+        }}
+      >
+        <DialogContent
+          sx={{
+            padding: 0, // Remove all padding
+          }}
+        >
+          <ResetPassword onClose={handleCloseResetPassword} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
 
-export default CreateAccount;
+export default Signin;

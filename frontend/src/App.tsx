@@ -23,7 +23,25 @@ function AppRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route
-          path="/"
+          path="*"
+          element={
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 40,
+                mass: 1,
+              }}
+            >
+              <LandingPage />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/landing-page"
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -76,6 +94,7 @@ function AppRoutes() {
             </motion.div>
           }
         />
+
         <Route
           path="/dashboard"
           element={

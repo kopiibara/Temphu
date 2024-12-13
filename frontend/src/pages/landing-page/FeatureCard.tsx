@@ -17,7 +17,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   titleColor,
 }) => {
   return (
-    <Box className="h-full flex justify-center items-center w-full">
+    <Box className="h-full flex justify-between items-center w-full">
       <Stack spacing={4}>
         <Box>{icon}</Box>
         <Stack spacing={1}>
