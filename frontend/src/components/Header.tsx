@@ -18,9 +18,6 @@ const Header = () => {
 
   const [mode, setMode] = useState("dark");
   const theme = ThemeProvide(mode as "light" | "dark");
-  const toggleMode = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-  };
 
   const handleLogoClick = () => {
     navigate("/landing-page");

@@ -20,7 +20,6 @@ import { useTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import ResetPassword from "./ResetPassword";
 
 const CreateAccount = () => {
   const navigate = useNavigate();
