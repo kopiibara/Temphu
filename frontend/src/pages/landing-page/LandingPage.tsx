@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion"; // Import necessary Framer Motion utilities
+import { motion, useInView } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -17,6 +18,7 @@ import CloudDoneOutlinedIcon from "@mui/icons-material/CloudDoneOutlined";
 
 const LandingPage = () => {
   const [mode, setMode] = useState("dark");
+  const navigate = useNavigate();
 
   const theme = ThemeProvide(mode as "light" | "dark");
 
@@ -24,42 +26,31 @@ const LandingPage = () => {
     setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
+  const handleGetStarted = () => {
+    navigate("/login/create-account");
+  };
+
+  const handleLogin = () => {
+    navigate("/login/sign-in");
+  };
+
   const features = [
     {
-      icon: (
-        <RealTimeOutlinedIcon
-          sx={{
-            fontSize: 80,
-            color: "#AA684A",
-          }}
-        />
-      ),
+      icon: <RealTimeOutlinedIcon sx={{ fontSize: 80, color: "#AA684A" }} />,
       title: "Real-Time Monitoring",
       description:
         "Get instant access to live temperature and humidity readings from your environment, updated in real-time through a web interface. ",
     },
     {
       icon: (
-        <DataOutlinedOutlinedIcon
-          sx={{
-            fontSize: 80,
-            color: "#76ABB2",
-          }}
-        />
+        <DataOutlinedOutlinedIcon sx={{ fontSize: 80, color: "#76ABB2" }} />
       ),
       title: "Interactive Data Visualization",
       description:
         "Easily view and analyze environmental trends with intuitive monitoring.",
     },
     {
-      icon: (
-        <CloudDoneOutlinedIcon
-          sx={{
-            fontSize: 80,
-            color: "#AA684A",
-          }}
-        />
-      ),
+      icon: <CloudDoneOutlinedIcon sx={{ fontSize: 80, color: "#AA684A" }} />,
       title: "Remote Accessibility",
       description:
         "Monitor your environment from any device, anytime, with easy access to real-time data.",
@@ -88,10 +79,8 @@ const LandingPage = () => {
     },
   ];
 
-  // Reference for the feature section
   const featureSectionRef = useRef(null);
   const toolSectionRef = useRef(null);
-  // Initialize isInView for each section
   const featureSectionInView = useInView(featureSectionRef);
   const toolSectionInView = useInView(toolSectionRef);
 
@@ -99,18 +88,24 @@ const LandingPage = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Stack className="flex justify-center items-center">
-        <Stack spacing={14}>
+        <Stack spacing={12}>
           {/* Logo */}
           <Stack
-            direction={"row"}
+            direction={{ xs: "column", sm: "row" }}
             spacing={1.5}
-            className="flex items-center sticky top-0 z-10 pt-10 pb-5 transition-all"
+            className="flex items-center sticky top-0 z-10 pt-10 pb-5"
             sx={{
               backgroundColor: mode === "light" ? "#FDFBFB" : "#0A0A0A",
               transition: "background-color 0.3s ease, box-shadow 0.3s ease",
+              paddingX: { xs: 2, md: 6 },
             }}
+            alignItems="center"
           >
-            <img src="/temphu-logo.png" alt="temphu" />
+            <img
+              src="/temphu-logo.png"
+              alt="temphu"
+              style={{ maxWidth: "150px" }}
+            />
             <Typography variant="h5">Temphu</Typography>
             <Box flexGrow={1} />
             <Button
@@ -130,22 +125,42 @@ const LandingPage = () => {
           </Stack>
 
           {/* Hero Section */}
-          <Box className="flex items-center justify-center">
-            <Stack direction={"row"} spacing={14}>
-              <Stack spacing={6}>
-                <Typography variant="h1">
-                  Stay in Control <br />
-                  of Your Environment, <br /> Always.
+          <Stack
+            className="flex items-center justify-center w-full"
+            sx={{ px: { xs: 2, md: 6 } }}
+          >
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={{ xs: 6, md: 14 }}
+              alignItems="center"
+            >
+              <Stack spacing={6} textAlign={{ xs: "center", md: "left" }}>
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: "2rem", sm: "3rem", md: "4rem" },
+                  }}
+                >
+                  Stay in Control of <br />
+                  Your Environment, <br /> Always.
                 </Typography>
-                <Typography variant="h4" sx={{ lineHeight: 2 }}>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontSize: { xs: "1.2rem", sm: "1.5rem", md: "2rem" },
+                  }}
+                >
                   Track <span style={{ color: "#DD8261" }}>temperature</span>{" "}
                   and
-                  <span style={{ color: "#75ABB2" }}> humidity</span>{" "}
-                  effortlessly <br />
-                  with real-time monitoring.
+                  <span style={{ color: "#75ABB2" }}> humidity</span> <br />
+                  effortlessly with real-time monitoring.
                 </Typography>
 
-                <Stack direction={"row"} spacing={2}>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={2}
+                  justifyContent={{ xs: "center", md: "flex-start" }}
+                >
                   <Button
                     variant="outlined"
                     sx={{
@@ -159,8 +174,9 @@ const LandingPage = () => {
                       py: 1,
                       px: 3,
                       textTransform: "none",
-                      fontSize: "1.2rem",
+                      fontSize: { xs: "1rem", sm: "1.2rem" },
                     }}
+                    onClick={handleGetStarted}
                   >
                     Get Started
                   </Button>
@@ -174,29 +190,34 @@ const LandingPage = () => {
                         color: "#FFFEFE",
                       },
                       borderRadius: "8px",
-
                       py: 1,
                       px: 3,
                       textTransform: "none",
-                      fontSize: "1.2rem",
+                      fontSize: { xs: "1rem", sm: "1.2rem" },
                     }}
+                    onClick={handleLogin}
                   >
                     Login
                   </Button>
                 </Stack>
               </Stack>
-              <Box>
-                <img src="/placeholder.png" alt="hero" />
+              <Box sx={{ width: { xs: "100%", md: "50%" } }}>
+                <img
+                  src="/placeholder.png"
+                  alt="hero"
+                  style={{ width: "100%", objectFit: "contain" }}
+                />
               </Box>
             </Stack>
-          </Box>
+          </Stack>
 
           {/* Features Section */}
           <Box
             className="flex items-center justify-center"
-            ref={featureSectionRef} // Attach reference
+            ref={featureSectionRef}
+            sx={{ px: { xs: 2, md: 6 } }}
           >
-            <Stack spacing={10} className="flex items-center justify-center">
+            <Stack spacing={10} alignItems="center">
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={
@@ -210,10 +231,14 @@ const LandingPage = () => {
                 }}
               >
                 <Typography variant="h3" textAlign="center">
-                  Features{" "}
+                  Features
                 </Typography>
               </motion.div>
-              <Stack direction={"row"} spacing={10}>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                spacing={10}
+                alignItems="center"
+              >
                 {features.map((feature, index) => (
                   <motion.div
                     key={index}
@@ -229,20 +254,11 @@ const LandingPage = () => {
                       ease: "easeOut",
                     }}
                   >
-                    <Box>
-                      <FeatureCard
-                        icon={feature.icon}
-                        title={feature.title}
-                        description={feature.description}
-                        titleColor={
-                          index === 0 || index === 2
-                            ? "#AA684A"
-                            : index === 1
-                            ? "#76ABB2"
-                            : "inherit"
-                        }
-                      />
-                    </Box>
+                    <FeatureCard
+                      icon={feature.icon}
+                      title={feature.title}
+                      description={feature.description}
+                    />
                   </motion.div>
                 ))}
               </Stack>
@@ -250,11 +266,12 @@ const LandingPage = () => {
           </Box>
 
           {/* Tools Section */}
-          <Box
+          <Stack
             className="flex items-center justify-center"
-            ref={toolSectionRef} // Attach reference
+            ref={toolSectionRef}
+            sx={{ px: { xs: 2, md: 6 } }}
           >
-            <Stack spacing={10} className="flex items-center justify-center">
+            <Stack spacing={10}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={
@@ -268,11 +285,11 @@ const LandingPage = () => {
                 }}
               >
                 <Typography variant="h3" textAlign="center">
-                  Powered by these Tools
+                  Tools Used
                 </Typography>
               </motion.div>
-              <Stack direction={"row"} spacing={10}>
-                {tools.map((tools, index) => (
+              <Stack direction={{ xs: "column", md: "row" }} spacing={16}>
+                {tools.map((tool, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -287,17 +304,15 @@ const LandingPage = () => {
                       ease: "easeOut",
                     }}
                   >
-                    <Box>
-                      <ToolsCard
-                        image={tools.image}
-                        description={tools.description}
-                      />
-                    </Box>
+                    <ToolsCard
+                      image={tool.image}
+                      description={tool.description}
+                    />
                   </motion.div>
                 ))}
               </Stack>
             </Stack>
-          </Box>
+          </Stack>
 
           {/* Footer */}
           <Footer />

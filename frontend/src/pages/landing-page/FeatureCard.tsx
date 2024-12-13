@@ -27,7 +27,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           <Typography
             variant="h6"
             sx={{
-              maxWidth: "30rem",
+              maxWidth: "24rem",
             }}
           >
             {description}

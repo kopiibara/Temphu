@@ -1,8 +1,8 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 import { PaletteMode } from "@mui/material";
 
 function ThemeProvider(mode: PaletteMode = "light") {
-  return createTheme({
+  let theme = createTheme({
     palette: {
       mode,
       ...(mode === "light"
@@ -26,7 +26,16 @@ function ThemeProvider(mode: PaletteMode = "light") {
           }),
     },
     typography: {
-      fontFamily: "Questrial, sans-serif",
+      fontFamily: "Questrial",
+    },
+    breakpoints: {
+      values: {
+        xs: 0,
+        sm: 600,
+        md: 960,
+        lg: 1280,
+        xl: 1920,
+      },
     },
     components: {
       MuiCssBaseline: {
@@ -38,6 +47,10 @@ function ThemeProvider(mode: PaletteMode = "light") {
       },
     },
   });
+
+  theme = responsiveFontSizes(theme);
+
+  return theme;
 }
 
 export default ThemeProvider;
