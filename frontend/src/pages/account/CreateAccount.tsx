@@ -15,23 +15,33 @@ import {
   InputAdornment,
   Tooltip,
   Zoom,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { auth, googleProvider, sendEmail, db } from "../../firebase/config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const CreateAccount = () => {
   const navigate = useNavigate();
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const theme = useTheme();
 
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [termsChecked, setTermsChecked] = useState(false);
+  const [termsError, setTermsError] = useState(false);
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const passwordValue = event.target.value;
@@ -85,8 +95,37 @@ const CreateAccount = () => {
     navigate("/landing-page");
   };
 
-  const handleCreateAccount = () => {
-    navigate("/account/sign-in");
+  const handleCreateAccount = async () => {
+    if (!termsChecked) {
+      setTermsError(true);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError(true);
+      return;
+    } 
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmail(userCredential.user);
+
+      // Add user document to Firestore
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        username: username,
+        email: email,
+        dateCreated: serverTimestamp(),
+      });
+
+      setSnackbarOpen(true);
+      navigate("/account/sign-in");
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -166,6 +205,53 @@ const CreateAccount = () => {
             label="Enter your username"
             variant="outlined"
             size="medium"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#FFFEFE",
+                  borderRadius: "0.5rem",
+                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
+                },
+                "& input": {
+                  color: "#FFFEFE",
+                  zIndex: 1,
+                  paddingX: "1.3rem",
+                  fontFamily: "Questrial",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#808080",
+                zIndex: 1,
+                paddingX: "0.5rem",
+                fontFamily: "Questrial",
+                "&.Mui-focused": {
+                  color: "#FFFEFE",
+                  padding: "0rem",
+                },
+              },
+              [theme.breakpoints.down("sm")]: {
+                width: "100%", // Full width on small screens
+              },
+            }}
+          />
+          <TextField
+            id="enter-your-email"
+            label="Enter your email"
+            variant="outlined"
+            size="medium"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -391,55 +477,17 @@ const CreateAccount = () => {
               </p>
             )}
           </FormControl>
-          <TextField
-            id="enter-your-email"
-            label="Enter your email"
-            variant="outlined"
-            size="medium"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              },
-              [theme.breakpoints.down("sm")]: {
-                width: "100%", // Full width on small screens
-              },
-            }}
-          />
 
           {/* Terms and Conditions */}
           <Stack direction={"row"} className="flex items-center ">
             <Checkbox
               {...label}
               size="small"
+              checked={termsChecked}
+              onChange={(e) => {
+                setTermsChecked(e.target.checked);
+                setTermsError(false);
+              }}
               sx={{
                 "& .MuiSvgIcon-root": {
                   fill: "none",
@@ -481,6 +529,11 @@ const CreateAccount = () => {
               </Typography>
             </Button>
           </Stack>
+          {termsError && (
+            <p style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}>
+              You must agree to the terms and conditions
+            </p>
+          )}
 
           {/* Create Account Button */}
           <Stack spacing={1}>
@@ -567,6 +620,15 @@ const CreateAccount = () => {
           </Stack>
         </Stack>
       </Stack>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Email verification has been sent.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

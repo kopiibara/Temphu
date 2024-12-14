@@ -1,10 +1,8 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // Add this import
 
-
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCfsr0NIBa0BQVWOdlncLqv7gVM5eeYiy4",
   authDomain: "temphu-67a04.firebaseapp.com",
@@ -16,14 +14,13 @@ const firebaseConfig = {
   measurementId: "G-HLNWXYP44Q"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider();
 
-// Export the Firebase Auth instance
 export const auth = getAuth(app);
 export const signIn = signInWithEmailAndPassword;
 export const sendEmail = sendEmailVerification;
 export const signOutUser = signOut;
 export const googleProvider = provider;
+export const db = getFirestore(app); // Add this line to export Firestore instance
