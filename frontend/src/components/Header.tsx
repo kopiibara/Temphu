@@ -12,6 +12,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ThemeProvide from "../assets/ThemeProvider";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { auth, signOutUser } from "../firebase/config";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -21,6 +22,15 @@ const Header = () => {
 
   const handleLogoClick = () => {
     navigate("/landing-page");
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOutUser(auth);
+      navigate("/login"); // Redirect to login page after sign out
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   return (
@@ -44,6 +54,9 @@ const Header = () => {
           </Stack>
 
           <Box flexGrow={1} />
+          <Button variant="contained" color="primary" onClick={handleSignOut}>
+            Sign Out
+          </Button>
           <Tooltip
             title="Settings"
             slots={{ transition: Zoom }}

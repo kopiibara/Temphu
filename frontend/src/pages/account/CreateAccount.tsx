@@ -90,7 +90,7 @@ const CreateAccount = () => {
   };
 
   return (
-    <Box className="flex items-center justify-center h-screen w-full p-10">
+    <Box className="flex items-center justify-center h-screen w-full p-10 bg-[#121212]">
       <Stack spacing={4}>
         {/* Title */}
         <Stack

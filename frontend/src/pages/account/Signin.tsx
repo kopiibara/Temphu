@@ -22,16 +22,34 @@ import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import ResetPassword from "./ResetPassword";
+import { auth, signIn, sendEmail, googleProvider } from "../../firebase/config";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const Signin = () => {
+  console.log(auth);
+
   const navigate = useNavigate();
 
   const theme = useTheme();
 
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [signInError, setSignInError] = useState("");
   const [openResetDialog, setOpenResetDialog] = useState(false);
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const emailValue = event.target.value;
+    setEmail(emailValue);
+
+    if (!emailValue.includes("@")) {
+      setEmailError(true);
+    } else {
+      setEmailError(false);
+    }
+  };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const passwordValue = event.target.value;
@@ -63,7 +81,31 @@ const Signin = () => {
   };
 
   const handleConfirm = () => {
-    navigate("/dashboard");
+    if (email && password) {
+      signIn(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          if (user.emailVerified) {
+            navigate("/dashboard");
+          } else {
+            sendEmail(user)
+              .then(() => {
+                setSignInError("Please verify your email. A verification email has been sent.");
+              })
+              .catch((error) => {
+                setSignInError("Error sending verification email: " + error.message);
+              });
+          }
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setSignInError(errorMessage);
+        });
+    } else {
+      setSignInError("Please enter both email and password.");
+    }
   };
 
   const handleOpenResetPassword = () => {
@@ -74,8 +116,22 @@ const Signin = () => {
     setOpenResetDialog(false);
   };
 
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        const user = result.user;
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setSignInError(errorMessage);
+      });
+  };
+
   return (
-    <Box className="flex items-center justify-center h-screen w-full p-10">
+    <Box className="flex items-center justify-center h-screen w-full p-10 bg-[#121212]">
       <Stack spacing={4}>
         {/* Title */}
         <Stack
@@ -146,11 +202,15 @@ const Signin = () => {
 
         {/* Input Fields*/}
         <Stack spacing={2} className="w-[21rem]">
-          {/* Username Field */}
+          {/* Email Field */}
           <TextField
-            id="enter-your-username"
-            label="Enter your username"
+            id="enter-your-email"
+            label="Enter your email"
             variant="outlined"
+            value={email}
+            onChange={handleEmailChange}
+            error={emailError}
+            helperText={emailError ? "Please enter a valid email address." : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -284,6 +344,12 @@ const Signin = () => {
             )}
           </FormControl>
 
+          {signInError && (
+            <Typography color="error" variant="body2">
+              {signInError}
+            </Typography>
+          )}
+
           {/* Forgot Password */}
           <Stack direction={"row"} className="flex items-end">
             <Box flexGrow={1}></Box>
@@ -347,6 +413,7 @@ const Signin = () => {
                   background: "linear-gradient(90deg, #AA684A, #76ABB2)",
                 },
               }}
+              onClick={handleGoogleSignIn}
             >
               <GoogleIcon
                 sx={{
