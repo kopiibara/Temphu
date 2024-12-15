@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Box,
   Stack,
@@ -27,7 +27,8 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 const Signin = () => {
   console.log(auth);
-
+  const [searchParams] = useSearchParams();
+  
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -39,6 +40,16 @@ const Signin = () => {
   const [passwordError, setPasswordError] = useState(false);
   const [signInError, setSignInError] = useState("");
   const [openResetDialog, setOpenResetDialog] = useState(false);
+  const [oobCode, setOobCode] = useState("");
+  
+// Check for oobCode on page load and trigger reset modal
+useEffect(() => {
+  const code = searchParams.get("oobCode");
+  if (code) {
+    setOobCode(code);
+    setOpenResetDialog(true);
+  }
+}, [searchParams]);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const emailValue = event.target.value;
@@ -114,6 +125,7 @@ const Signin = () => {
 
   const handleCloseResetPassword = () => {
     setOpenResetDialog(false);
+    setOobCode(""); // Clear oobCode
   };
 
   const handleGoogleSignIn = () => {
@@ -476,8 +488,8 @@ const Signin = () => {
             padding: 0, // Remove all padding
           }}
         >
-          <ResetPassword onClose={handleCloseResetPassword} />
-        </DialogContent>
+          <ResetPassword oobCode={oobCode} onClose={handleCloseResetPassword} />
+          </DialogContent>
       </Dialog>
     </Box>
   );

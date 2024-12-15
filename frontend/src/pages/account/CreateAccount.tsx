@@ -22,8 +22,8 @@ import { useTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { auth, googleProvider, sendEmail, db } from "../../firebase/config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, googleProvider, sendEmail, db, createUserEmail } from "../../firebase/config";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const CreateAccount = () => {
@@ -107,7 +107,7 @@ const CreateAccount = () => {
     } 
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserEmail(auth, email, password);
       await sendEmail(userCredential.user);
 
       // Add user document to Firestore
@@ -118,7 +118,7 @@ const CreateAccount = () => {
       });
 
       setSnackbarOpen(true);
-      navigate("/account/sign-in");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error creating account:", error);
     }
@@ -126,6 +126,25 @@ const CreateAccount = () => {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+  
+      // Add user document to Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        username: user.displayName,
+        email: user.email,
+        dateCreated: serverTimestamp(),
+      });
+  
+      setSnackbarOpen(true);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error signing up with Google:", error);
+    }
   };
 
   return (
@@ -577,6 +596,7 @@ const CreateAccount = () => {
                   background: "linear-gradient(90deg, #AA684A, #76ABB2)",
                 },
               }}
+              onClick={handleGoogleSignUp}
             >
               <GoogleIcon
                 sx={{

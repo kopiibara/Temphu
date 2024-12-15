@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, sendEmailVerification, signOut } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"; // Add this import
+import {createUserWithEmailAndPassword} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCfsr0NIBa0BQVWOdlncLqv7gVM5eeYiy4",
@@ -24,3 +25,4 @@ export const sendEmail = sendEmailVerification;
 export const signOutUser = signOut;
 export const googleProvider = provider;
 export const db = getFirestore(app); // Add this line to export Firestore instance
+export const createUserEmail = createUserWithEmailAndPassword;
