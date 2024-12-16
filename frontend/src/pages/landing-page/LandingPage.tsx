@@ -10,7 +10,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 import ThemeProvide from "../../assets/ThemeProvider";
 import FeatureCard from "./FeatureCard";
 import ToolsCard from "./ToolsCard";
-import Footer from "./Footer";
+import Footer from "../Footer/Footer";
 
 import RealTimeOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import DataOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
