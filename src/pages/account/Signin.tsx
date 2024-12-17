@@ -1,11 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Box,
   Stack,
   Typography,
   TextField,
-  Checkbox,
   Button,
   Divider,
   IconButton,
@@ -15,33 +14,60 @@ import {
   InputAdornment,
   Tooltip,
   Zoom,
-  Snackbar,
-  Alert,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import GoogleIcon from "@mui/icons-material/Google";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { auth, googleProvider, sendEmail, db, createUserEmail } from "../../firebase/config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import ResetPassword from "./ResetPassword";
+import {
+  auth,
+  signIn,
+  sendEmail,
+  googleProvider,
+  db,
+} from "../../firebase/config";
+import { signInWithPopup } from "firebase/auth";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 
-const CreateAccount = () => {
+const Signin = () => {
+  console.log(auth);
+  const [searchParams] = useSearchParams();
+
   const navigate = useNavigate();
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+
   const theme = useTheme();
 
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [termsChecked, setTermsChecked] = useState(false);
-  const [termsError, setTermsError] = useState(false);
+  const [signInError, setSignInError] = useState("");
+  const [openResetDialog, setOpenResetDialog] = useState(false);
+  const [oobCode, setOobCode] = useState("");
+
+  // Check for oobCode on page load and trigger reset modal
+  useEffect(() => {
+    const code = searchParams.get("oobCode");
+    if (code) {
+      setOobCode(code);
+      setOpenResetDialog(true);
+    }
+  }, [searchParams]);
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const emailValue = event.target.value;
+    setEmail(emailValue);
+
+    if (!emailValue.includes("@")) {
+      setEmailError(true);
+    } else {
+      setEmailError(false);
+    }
+  };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const passwordValue = event.target.value;
@@ -54,25 +80,8 @@ const CreateAccount = () => {
     }
   };
 
-  const handleConfirmPasswordChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const confirmPasswordValue = event.target.value;
-    setConfirmPassword(confirmPasswordValue);
-
-    if (confirmPasswordValue !== password) {
-      setConfirmPasswordError(true);
-    } else {
-      setConfirmPasswordError(false);
-    }
-  };
-
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
-  };
-
-  const handleClickShowConfirmPassword = () => {
-    setShowConfirmPassword((prev) => !prev);
   };
 
   const handleMouseDownPassword = (
@@ -81,70 +90,78 @@ const CreateAccount = () => {
     event.preventDefault();
   };
 
-  const handleMouseDownConfirmPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleSignIn = () => {
-    navigate("/account/sign-in");
+  const handleSignUp = () => {
+    navigate("/account/create-account");
   };
 
   const handleClose = () => {
     navigate("/landing-page");
   };
 
-  const handleCreateAccount = async () => {
-    if (!termsChecked) {
-      setTermsError(true);
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setConfirmPasswordError(true);
-      return;
-    } 
-
-    try {
-      const userCredential = await createUserEmail(auth, email, password);
-      await sendEmail(userCredential.user);
-
-      // Add user document to Firestore
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        username: username,
-        email: email,
-        dateCreated: serverTimestamp(),
-      });
-
-      setSnackbarOpen(true);
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error creating account:", error);
+  const handleConfirm = () => {
+    if (email && password) {
+      signIn(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          if (user.emailVerified) {
+            navigate("/dashboard");
+          } else {
+            sendEmail(user)
+              .then(() => {
+                setSignInError(
+                  "Please verify your email. A verification email has been sent."
+                );
+              })
+              .catch((error) => {
+                setSignInError(
+                  "Error sending verification email: " + error.message
+                );
+              });
+          }
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          setSignInError(errorMessage);
+        });
+    } else {
+      setSignInError("Please enter both email and password.");
     }
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
+  const handleOpenResetPassword = () => {
+    setOpenResetDialog(true);
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-  
-      // Add user document to Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        username: user.displayName,
-        email: user.email,
-        dateCreated: serverTimestamp(),
+  const handleCloseResetPassword = () => {
+    setOpenResetDialog(false);
+    setOobCode(""); // Clear oobCode
+  };
+
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, googleProvider)
+      .then(async (result) => {
+        const user = result.user;
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+          // Add user document to Firestore
+          await setDoc(userDocRef, {
+            username: user.displayName,
+            email: user.email,
+            dateCreated: serverTimestamp(),
+          });
+        }
+
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        // Handle Errors here.
+
+        const errorMessage = error.message;
+        setSignInError(errorMessage);
       });
-  
-      setSnackbarOpen(true);
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error signing up with Google:", error);
-    }
   };
 
   return (
@@ -168,7 +185,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Create your Account
+              Login your Account
             </Typography>
             <Typography
               variant="subtitle1"
@@ -180,7 +197,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Enter your details to sign up
+              Enter your details to login.
             </Typography>
           </Stack>
 
@@ -219,58 +236,15 @@ const CreateAccount = () => {
 
         {/* Input Fields*/}
         <Stack spacing={2} className="w-[21rem]">
-          <TextField
-            id="enter-your-username"
-            label="Enter your username"
-            variant="outlined"
-            size="medium"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              },
-              [theme.breakpoints.down("sm")]: {
-                width: "100%", // Full width on small screens
-              },
-            }}
-          />
+          {/* Email Field */}
           <TextField
             id="enter-your-email"
             label="Enter your email"
             variant="outlined"
-            size="medium"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
+            error={emailError}
+            helperText={emailError ? "Please enter a valid email address." : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
@@ -297,6 +271,7 @@ const CreateAccount = () => {
               "& .MuiInputLabel-root": {
                 color: "#808080",
                 zIndex: 1,
+
                 paddingX: "0.5rem",
                 fontFamily: "Questrial",
                 "&.Mui-focused": {
@@ -403,156 +378,32 @@ const CreateAccount = () => {
             )}
           </FormControl>
 
-          {/* Confirm Password Field */}
-          <FormControl
-            variant="outlined"
-            error={confirmPasswordError}
-            sx={{
-              m: 1,
-              width: "100%",
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#FFFEFE",
-                  borderRadius: "0.5rem",
-                  background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                },
-                "& input": {
-                  color: "#FFFEFE",
-                  zIndex: 1,
-                  paddingX: "1.3rem",
-                  fontFamily: "Questrial",
-                },
-              },
-            }}
-          >
-            <InputLabel
-              htmlFor="confirm-password"
-              sx={{
-                color: "#808080",
-                zIndex: 1,
-                paddingX: "0.5rem",
-                fontFamily: "Questrial",
-                "&.Mui-focused": {
-                  color: "#FFFEFE",
-                  padding: "0rem",
-                },
-              }}
-            >
-              Confirm your password
-            </InputLabel>
-            <OutlinedInput
-              id="confirm-password"
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              inputProps={{
-                minLength: 8,
-              }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label={
-                      showConfirmPassword
-                        ? "hide the password"
-                        : "display the password"
-                    }
-                    onClick={handleClickShowConfirmPassword}
-                    onMouseDown={handleMouseDownConfirmPassword}
-                    onMouseUp={handleMouseDownConfirmPassword}
-                    edge="end"
-                    sx={{
-                      color: "#808080",
-                      zIndex: 1,
-                      marginRight: "0.1rem",
-                      "&:hover": {
-                        color: "#FFFEFE",
-                      },
-                    }}
-                  >
-                    {showConfirmPassword ? (
-                      <VisibilityOff fontSize="small" />
-                    ) : (
-                      <Visibility fontSize="small" />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Confirm your password"
-            />
-            {confirmPasswordError && (
-              <p
-                style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}
-              >
-                Passwords do not match
-              </p>
-            )}
-          </FormControl>
+          {signInError && (
+            <Typography color="error" variant="body2">
+              {signInError}
+            </Typography>
+          )}
 
-          {/* Terms and Conditions */}
-          <Stack direction={"row"} className="flex items-center ">
-            <Checkbox
-              {...label}
+          {/* Forgot Password */}
+          <Stack direction={"row"} className="flex items-end">
+            <Box flexGrow={1}></Box>
+            <Button
+              variant="text"
               size="small"
-              checked={termsChecked}
-              onChange={(e) => {
-                setTermsChecked(e.target.checked);
-                setTermsError(false);
-              }}
-              sx={{
-                "& .MuiSvgIcon-root": {
-                  fill: "none",
-                },
-              }}
-              icon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    border: "0.06rem solid #FFFEFE",
-                  }}
-                />
-              }
-              checkedIcon={
-                <span
-                  style={{
-                    display: "inline-block",
-                    width: "1rem",
-                    height: "1rem",
-                    borderRadius: "0.25rem",
-                    background: "linear-gradient(90deg, #D98863, #76ABB2)",
-                  }}
-                />
-              }
-            />
-            <Button variant="text" size="small" sx={{ textTransform: "none" }}>
+              sx={{ textTransform: "none" }}
+              onClick={handleOpenResetPassword}
+            >
               <Typography
                 variant="subtitle2"
                 sx={{
-                  color: "#FFFEFE",
-                  fontFamily: "Questrial", // Apply the same font as in ThemeProvider
+                  color: "#808080",
+                  fontFamily: "Questrial",
                 }}
               >
-                I agree to <span style={{ color: "#AA684A" }}>Terms</span> and{" "}
-                <span style={{ color: "#76ABB2" }}>Conditions</span>
+                Forgot Password
               </Typography>
             </Button>
           </Stack>
-          {termsError && (
-            <p style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}>
-              You must agree to the terms and conditions
-            </p>
-          )}
 
           {/* Create Account Button */}
           <Stack spacing={1}>
@@ -574,9 +425,9 @@ const CreateAccount = () => {
                   scale: 1.01,
                 },
               }}
-              onClick={handleCreateAccount}
+              onClick={handleConfirm}
             >
-              Create your Account
+              Confirm
             </Button>
             <Divider>or</Divider>
             <Button
@@ -596,7 +447,7 @@ const CreateAccount = () => {
                   background: "linear-gradient(90deg, #AA684A, #76ABB2)",
                 },
               }}
-              onClick={handleGoogleSignUp}
+              onClick={handleGoogleSignIn}
             >
               <GoogleIcon
                 sx={{
@@ -605,7 +456,7 @@ const CreateAccount = () => {
                   marginRight: "0.75rem",
                 }}
               />
-              Sign up with Google
+              Sign in with Google
             </Button>
           </Stack>
 
@@ -624,7 +475,7 @@ const CreateAccount = () => {
                 },
               }}
             >
-              Already have an account?
+              Dont have an account?
             </Typography>
             <Button
               variant="text"
@@ -633,24 +484,37 @@ const CreateAccount = () => {
                 fontFamily: "Questrial",
                 textTransform: "none",
               }}
-              onClick={handleSignIn}
+              onClick={handleSignUp}
             >
-              Sign in
+              Sign up
             </Button>
           </Stack>
         </Stack>
       </Stack>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleSnackbarClose}
+
+      {/* Reset Password Dialog */}
+      <Dialog
+        open={openResetDialog}
+        onClose={handleCloseResetPassword}
+        aria-labelledby="reset-password-dialog"
+        sx={{
+          "& .MuiPaper-root": {
+            backgroundColor: "#1e293b",
+
+            borderRadius: "0.5rem",
+          },
+        }}
       >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          Email verification has been sent.
-        </Alert>
-      </Snackbar>
+        <DialogContent
+          sx={{
+            padding: 0, // Remove all padding
+          }}
+        >
+          <ResetPassword oobCode={oobCode} onClose={handleCloseResetPassword} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
 
-export default CreateAccount;
+export default Signin;

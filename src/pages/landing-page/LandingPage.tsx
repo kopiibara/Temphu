@@ -7,10 +7,11 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 
+import ImageChange from "../../components/ImageChange";
 import ThemeProvide from "../../assets/ThemeProvider";
 import FeatureCard from "./FeatureCard";
 import ToolsCard from "./ToolsCard";
-import Footer from "./Footer";
+import Footer from "../footer/Footer";
 
 import RealTimeOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import DataOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
@@ -62,7 +63,7 @@ const LandingPage = () => {
 
   const tools = [
     {
-      image: "/placeholder.png",
+      image: "/nodemcu-esp8266.png",
       description: (
         <>
           <span style={{ color: "#AA684A" }}>ESP8266</span> a low-cost
@@ -72,7 +73,7 @@ const LandingPage = () => {
       ),
     },
     {
-      image: "/placeholder.png",
+      image: "/dht-22.png",
       description: (
         <>
           <span style={{ color: "#76ABB2" }}>DHT22</span> a digital sensor that
@@ -215,11 +216,7 @@ const LandingPage = () => {
                 </Stack>
               </Stack>
               <Box sx={{ width: { xs: "100%", md: "50%" } }}>
-                <img
-                  src="/placeholder.png"
-                  alt="hero"
-                  style={{ width: "100%", objectFit: "contain" }}
-                />
+                <ImageChange />
               </Box>
             </Stack>
           </Stack>

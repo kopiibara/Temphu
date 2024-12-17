@@ -17,11 +17,21 @@ import { useTheme } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { verifyPasswordResetCode, confirmPasswordReset, sendPasswordResetEmail } from "firebase/auth";
+import {
+  verifyPasswordResetCode,
+  confirmPasswordReset,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import { auth, db } from "../../firebase/config"; // Adjust the path as needed
 import { collection, query, where, getDocs } from "firebase/firestore";
 
-const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: string }) => {
+const ResetPassword = ({
+  onClose,
+  oobCode,
+}: {
+  onClose: () => void;
+  oobCode?: string;
+}) => {
   const theme = useTheme();
 
   // State variables
@@ -106,7 +116,9 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
     }
   };
 
-  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmPasswordChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const confirmPasswordValue = event.target.value;
     setConfirmPassword(confirmPasswordValue);
 
@@ -125,11 +137,15 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
     setShowConfirmPassword((prev) => !prev);
   };
 
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
-  const handleMouseDownConfirmPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouseDownConfirmPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     event.preventDefault();
   };
 
@@ -151,7 +167,9 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
 
     try {
       await confirmPasswordReset(auth, oobCode, password);
-      alert("Password successfully reset! You can now log in with your new password.");
+      alert(
+        "Password successfully reset! You can now log in with your new password."
+      );
       onClose();
     } catch (err) {
       setError("Failed to reset the password. Please try again.");
@@ -190,7 +208,9 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                   onClick={onClose}
                   sx={{
                     color: "white",
-                    "&:hover": { background: "linear-gradient(90deg, #AA684A, #76ABB2)" },
+                    "&:hover": {
+                      background: "linear-gradient(90deg, #AA684A, #76ABB2)",
+                    },
                   }}
                 >
                   <CloseIcon />
@@ -260,6 +280,16 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                       zIndex: 1,
                       paddingX: "1.3rem",
                       fontFamily: "Questrial",
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#808080",
+                    zIndex: 1,
+                    paddingX: "0.5rem",
+                    fontFamily: "Questrial",
+                    "&.Mui-focused": {
+                      color: "#FFFEFE",
+                      padding: "0rem",
                     },
                   },
                 }}
@@ -340,7 +370,11 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label={showPassword ? "hide the password" : "display the password"}
+                        aria-label={
+                          showPassword
+                            ? "hide the password"
+                            : "display the password"
+                        }
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
@@ -351,14 +385,24 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                           "&:hover": { color: "#FFFEFE" },
                         }}
                       >
-                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                        {showPassword ? (
+                          <VisibilityOff fontSize="small" />
+                        ) : (
+                          <Visibility fontSize="small" />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   }
                   label="Enter your new password"
                 />
                 {passwordError && (
-                  <p style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}>
+                  <p
+                    style={{
+                      color: "red",
+                      marginTop: "6px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
                     Password must be at least 8 characters
                   </p>
                 )}
@@ -418,7 +462,11 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label={showConfirmPassword ? "hide the password" : "display the password"}
+                        aria-label={
+                          showConfirmPassword
+                            ? "hide the password"
+                            : "display the password"
+                        }
                         onClick={handleClickShowConfirmPassword}
                         onMouseDown={handleMouseDownConfirmPassword}
                         edge="end"
@@ -429,13 +477,23 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                           "&:hover": { color: "#FFFEFE" },
                         }}
                       >
-                        {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                        {showConfirmPassword ? (
+                          <VisibilityOff fontSize="small" />
+                        ) : (
+                          <Visibility fontSize="small" />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   }
                 />
                 {confirmPasswordError && (
-                  <p style={{ color: "red", marginTop: "6px", fontSize: "0.75rem" }}>
+                  <p
+                    style={{
+                      color: "red",
+                      marginTop: "6px",
+                      fontSize: "0.75rem",
+                    }}
+                  >
                     Passwords do not match
                   </p>
                 )}
@@ -459,7 +517,11 @@ const ResetPassword = ({ onClose, oobCode }: { onClose: () => void; oobCode?: st
                 Reset Password
               </Button>
               {error && (
-                <Typography variant="body2" color="error" sx={{ mt: 2, textAlign: "center" }}>
+                <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{ mt: 2, textAlign: "center" }}
+                >
                   {error}
                 </Typography>
               )}
