@@ -29,7 +29,7 @@ import {
   db,
   createUserEmail,
 } from "../../firebase/config";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const CreateAccount = () => {

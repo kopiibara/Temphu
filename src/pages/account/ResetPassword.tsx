@@ -45,7 +45,7 @@ const ResetPassword = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-  const [isCodeValid, setIsCodeValid] = useState(false);
+  const [_isCodeValid, setIsCodeValid] = useState(false); // @ts-ignore
 
   // Verifying the reset code if `oobCode` is provided
   useEffect(() => {
@@ -66,18 +66,6 @@ const ResetPassword = ({
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
-  };
-
-  const handleVerifyEmail = async () => {
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      setEmailError("Email does not exist.");
-    } else {
-      setEmailError("");
-    }
   };
 
   const handleSendResetEmail = async () => {

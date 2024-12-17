@@ -33,3 +33,5 @@ export const googleProvider = provider;
 export const db = getFirestore(app); // Add this line to export Firestore instance
 export const createUserEmail = createUserWithEmailAndPassword;
 export const database = getDatabase(app);
+export const dbRef = ref(database);
+export const onValueChange = onValue;

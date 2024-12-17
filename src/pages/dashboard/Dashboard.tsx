@@ -173,7 +173,7 @@ const Dashboard = () => {
   }, []);
 
   const handleAlignment = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     newAlignment: string
   ) => {
     setAlignment(newAlignment);

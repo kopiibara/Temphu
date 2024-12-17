@@ -6,16 +6,18 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { ThemeProvider, CssBaseline } from "@mui/material";
+import Link from "@mui/material/Link";
 
 import ImageChange from "../../components/ImageChange";
 import ThemeProvide from "../../assets/ThemeProvider";
 import FeatureCard from "./FeatureCard";
 import ToolsCard from "./ToolsCard";
-import Footer from "../footer/Footer";
 
 import RealTimeOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import DataOutlinedOutlinedIcon from "@mui/icons-material/InsertChartOutlinedOutlined";
 import CloudDoneOutlinedIcon from "@mui/icons-material/CloudDoneOutlined";
+
+import ESP8266 from "/nodemcu-esp8266.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -63,7 +65,7 @@ const LandingPage = () => {
 
   const tools = [
     {
-      image: "/nodemcu-esp8266.png",
+      image: ESP8266,
       description: (
         <>
           <span style={{ color: "#AA684A" }}>ESP8266</span> a low-cost
@@ -73,7 +75,7 @@ const LandingPage = () => {
       ),
     },
     {
-      image: "/dht-22.png",
+      image: "./dht-22.png",
       description: (
         <>
           <span style={{ color: "#76ABB2" }}>DHT22</span> a digital sensor that
@@ -325,7 +327,37 @@ const LandingPage = () => {
           </Stack>
 
           {/* Footer */}
-          <Footer />
+          <Box
+            component="footer"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+              py: 4,
+              backgroundColor: "background.paper",
+              color: "text.primary",
+            }}
+          >
+            <motion.div whileHover={{ scale: 1.1 }}>
+              <Link
+                href="https://github.com/kopiibara/Temphu.git"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: "inherit",
+                  textDecoration: "none",
+                  "&:hover": { color: "#AA684A" },
+                }}
+              >
+                Github
+              </Link>
+            </motion.div>
+
+            <Typography variant="body2" sx={{ mt: 2, opacity: 0.7 }}>
+              By BSCS - 3A
+            </Typography>
+          </Box>
         </Stack>
       </Stack>
     </ThemeProvider>
